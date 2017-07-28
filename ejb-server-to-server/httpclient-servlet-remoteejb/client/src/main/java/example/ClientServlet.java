@@ -19,17 +19,16 @@ import example.ejb.WhoAmIBeanRemote;
  * @author Jan Martiska
  */
 @WebServlet(urlPatterns = "/")
-
 public class ClientServlet extends HttpServlet {
 
-   /* @EJB(lookup = "ejb:/server-side/WhoAmIBean!example.ejb.WhoAmIBeanRemote")
-    private WhoAmIBeanRemote remoteBeanByInjection;
-*/
+    /* @EJB(lookup = "ejb:/server-side/WhoAmIBean!example.ejb.WhoAmIBeanRemote")
+     private WhoAmIBeanRemote remoteBeanByInjection;
+ */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        resp.getWriter().append("Servlet running as user: " + req.getRemoteUser() +"\n");
+        resp.getWriter().append("Servlet running as user: " + req.getRemoteUser() + "\n");
 
         final String hostname = System.getProperty("remote.ejb.host");
         if (hostname == null) {
@@ -46,7 +45,7 @@ public class ClientServlet extends HttpServlet {
             e.printStackTrace(resp.getWriter());
         }
 
-        // invoke bean obtained by JNDI lookup
+        // invoke bean obtained by JNDI lookup over using a remote-outbound-connection
         try {
             String username = callBeanByLookup();
             resp.getWriter().append("WhoAmI from bean obtained by lookup returned: ").append(username).append("\n");
@@ -56,23 +55,32 @@ public class ClientServlet extends HttpServlet {
         }*/
 
         // invoke bean obtained by scoped context
-        try {
+    /*    try {
             String username = callBeanByScopedContext();
             resp.getWriter().append("WhoAmI from bean obtained by scoped context returned: ").append(username).append("\n");
         } catch(Exception e) {
             resp.getWriter().append("Calling bean obtained by scoped context failed: ");
             e.printStackTrace(resp.getWriter());
+        }*/
+
+        // invoke bean obtained by PROVIDER_URL
+        try {
+            String username = callBeanByProviderUrl();
+            resp.getWriter().append("WhoAmI from bean obtained by provider URL returned: ").append(username)
+                    .append("\n");
+        } catch (Exception e) {
+            resp.getWriter().append("Calling bean obtained by provider URL failed: ");
+            e.printStackTrace(resp.getWriter());
         }
     }
 
-    private String callBeanByScopedContext() throws NamingException {
+    private String callBeanByProviderUrl() throws NamingException {
         Properties props = new Properties();
-        props.put("remote.connections", "main");
-        props.put("remote.connection.main.host", System.getProperty("remote.ejb.host"));
-        props.put("remote.connection.main.port", "8080");
-        props.put("remote.connection.main.username", "admin");
-        props.put("remote.connection.main.password", "admin123+");
-        InitialContext ctx =  null;
+        props.put(Context.INITIAL_CONTEXT_FACTORY, "org.wildfly.naming.client.WildFlyInitialContextFactory");
+        props.put(Context.PROVIDER_URL, "remote+http://" + System.getProperty("remote.ejb.host")+":8080");
+        props.put(Context.SECURITY_PRINCIPAL, "admin");
+        props.put(Context.SECURITY_CREDENTIALS, "admin123+");
+        InitialContext ctx = null;
         try {
             ctx = new InitialContext(props);
             WhoAmIBeanRemote remoteBeanByLookup = (WhoAmIBeanRemote)ctx
@@ -87,7 +95,28 @@ public class ClientServlet extends HttpServlet {
 
     }
 
-   /* public String callBeanByInjection() throws IOException {
+    private String callBeanByScopedContext() throws NamingException {
+        Properties props = new Properties();
+        props.put("remote.connections", "main");
+        props.put("remote.connection.main.host", System.getProperty("remote.ejb.host"));
+        props.put("remote.connection.main.port", "8080");
+        props.put("remote.connection.main.username", "admin");
+        props.put("remote.connection.main.password", "admin123+");
+        InitialContext ctx = null;
+        try {
+            ctx = new InitialContext(props);
+            WhoAmIBeanRemote remoteBeanByLookup = (WhoAmIBeanRemote)ctx
+                    .lookup("ejb:/server-side/WhoAmIBean!example.ejb.WhoAmIBeanRemote");
+            return remoteBeanByLookup.whoAmI();
+        } finally {
+            if (ctx != null) {
+                ((Context)ctx.lookup("ejb:")).close();
+                ctx.close();
+            }
+        }
+
+    }
+ /*   public String callBeanByInjection() throws IOException {
         return remoteBeanByInjection.whoAmI();
 
     }
