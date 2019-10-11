@@ -1,85 +1,46 @@
 package example.quarkusmetrics;
 
-import org.eclipse.microprofile.metrics.Histogram;
-import org.eclipse.microprofile.metrics.MetricRegistry;
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.ConcurrentGauge;
-import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Gauge;
-import org.eclipse.microprofile.metrics.annotation.Metered;
+import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.annotation.Metric;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Path("/")
 public class MainResource {
 
     @Inject
-    MetricRegistry registry;
+    @ForCurrentTransaction
+            Counter counter;
 
     @Inject
-    @Metric(name = "histogram")
-    Histogram histogram;
+    @Metric(name = "global-request-counter", absolute = true)
+    Counter globalRequestCounter;
+
+
+    AtomicLong transactionIdGenerator = new AtomicLong();
 
     @GET
-    @Produces("text/plain")
-    @Path("/counter")
-    @Counted(name = "counter", absolute = true, tags = "foo=bar")
-    public String counter() {
-        return "OK";
-    }
+    @Path("/")
+    public void incrementAndGetCounter() {
+        long txId = transactionIdGenerator.incrementAndGet();
+        System.out.println("Start transaction " + txId);
+        TransactionScopedMetricProducer.activeTransaction.set(txId);
+        try {
+            int n = ThreadLocalRandom.current().nextInt(500);
+            System.out.println("Increasing " + counter + " by " + n);
+            counter.inc(n);
 
-    @GET
-    @Produces("text/plain")
-    @Path("/gauge")
-    @Gauge(name = "gauge", absolute = true, unit = MetricUnits.NONE)
-    public Long gauge() {
-        return ThreadLocalRandom.current().nextLong(100);
-    }
+            System.out.println("Increasing global request counter " + globalRequestCounter);
+            globalRequestCounter.inc();
 
-    @GET
-    @Produces("text/plain")
-    @Path("/timer")
-    @Timed(name = "timer", absolute = true)
-    public String timer() throws InterruptedException {
-        long wait = ThreadLocalRandom.current().nextLong(1000);
-        TimeUnit.MILLISECONDS.sleep(wait);
-        return "OK, waited " + wait + " milliseconds";
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("/histogram")
-    public String histogram() {
-        long number = ThreadLocalRandom.current().nextLong(1000);
-        histogram.update(number);
-        return "OK, added " + number + " to the histogram";
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("/meter")
-    @Metered(name = "meter", absolute = true)
-    public String meter() throws InterruptedException {
-        long wait = ThreadLocalRandom.current().nextLong(1000);
-        TimeUnit.MILLISECONDS.sleep(wait);
-        return "OK, waited " + wait + " milliseconds";
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("/cgauge")
-    @ConcurrentGauge(name = "cgauge", absolute = true)
-    public String cgauge() throws InterruptedException {
-        System.out.println("sleeping...");
-        TimeUnit.SECONDS.sleep(10);
-        return "OK, slept for 10 seconds";
+        }
+        finally {
+            TransactionScopedMetricProducer.activeTransaction.set(null);
+        }
     }
 
 
