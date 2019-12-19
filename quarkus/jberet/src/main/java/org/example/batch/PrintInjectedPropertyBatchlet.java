@@ -2,6 +2,7 @@ package org.example.batch;
 
 import javax.batch.api.BatchProperty;
 import javax.batch.api.Batchlet;
+import javax.batch.runtime.context.JobContext;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -18,9 +19,14 @@ public class PrintInjectedPropertyBatchlet implements Batchlet {
     @BatchProperty(name = "injected.property")
     String property;
 
+    @Inject
+    JobContext jobContext;
+
     @Override
     public String process() throws Exception {
         System.out.println("Injected property value = " + property + ", into object " + this.toString());
+        System.out.println("job instance id = " + jobContext.getInstanceId());
+        System.out.println("job execution id =  " + jobContext.getExecutionId());
         System.out.println("processing in thread " + Thread.currentThread().getName());
         return "ok";
     }
