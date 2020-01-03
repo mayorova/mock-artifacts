@@ -1,5 +1,7 @@
 package org.example.batch;
 
+import org.jberet.spi.BatchEnvironment;
+
 import javax.batch.operations.JobOperator;
 import javax.batch.runtime.BatchRuntime;
 import javax.inject.Inject;

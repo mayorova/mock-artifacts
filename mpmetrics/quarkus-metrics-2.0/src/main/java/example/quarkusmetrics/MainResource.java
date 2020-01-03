@@ -14,13 +14,14 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Path("/")
 public class MainResource {
 
-    @Inject
+  /*  @Inject
     MetricRegistry registry;
 
     @Inject
@@ -30,11 +31,24 @@ public class MainResource {
     @GET
     @Produces("text/plain")
     @Path("/counter")
-    @Counted(name = "counter", absolute = true, tags = "foo=bar")
+    @Counted
     public String counter() {
         return "OK";
-    }
+    }*/
 
+  @GET
+  @Path("/get")
+  public void getAnnotationsReflectively() throws NoSuchMethodException {
+      System.out.println(Arrays.toString(MainResource.class.getMethod("XXX").getAnnotations()));
+  }
+
+    @GET
+    @Produces("text/plain")
+    @Path("/xxx")
+    public String XXX() {
+        return "OK";
+    }
+/*
     @GET
     @Produces("text/plain")
     @Path("/gauge")
@@ -80,7 +94,7 @@ public class MainResource {
         System.out.println("sleeping...");
         TimeUnit.SECONDS.sleep(10);
         return "OK, slept for 10 seconds";
-    }
+    }*/
 
 
 }

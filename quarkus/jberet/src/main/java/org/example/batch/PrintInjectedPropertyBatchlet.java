@@ -3,7 +3,6 @@ package org.example.batch;
 import javax.batch.api.BatchProperty;
 import javax.batch.api.Batchlet;
 import javax.batch.runtime.context.JobContext;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
