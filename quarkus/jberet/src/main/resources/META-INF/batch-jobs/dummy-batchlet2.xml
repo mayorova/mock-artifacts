@@ -4,7 +4,7 @@
    <step id="step1">
        <batchlet ref="printInjectedPropertyBatchlet">
            <properties>
-<!--               <property name="injected.property" value="blabla2"/>-->
+<!--               <property name="injected.propety" value="blabla2"/>-->
                <property name="injected.property" value="#{jobParameters['injected.property']}"/>
            </properties>
        </batchlet>
