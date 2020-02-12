@@ -230,6 +230,14 @@
             <!-- ##EJB_APPLICATION_SECURITY_DOMAINS## -->
         </subsystem>
         <subsystem xmlns="urn:wildfly:elytron:4.0" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
+            <authentication-client>
+                <authentication-configuration name="admin-cfg" authentication-name="admin" realm="ApplicationRealm" sasl-mechanism-selector="DIGEST-MD5">
+                    <credential-reference clear-text="admin123+"/>
+                </authentication-configuration>
+                <authentication-context name="admin-ctx">
+                    <match-rule authentication-configuration="admin-cfg"/>
+                </authentication-context>
+            </authentication-client>
             <providers>
                 <aggregate-providers name="combined-providers">
                     <providers name="elytron"/>
@@ -500,6 +508,9 @@
         <subsystem xmlns="urn:jboss:domain:pojo:1.0"/>
         <subsystem xmlns="urn:jboss:domain:remoting:4.0">
             <http-connector name="http-remoting-connector" connector-ref="default" security-realm="ApplicationRealm"/>
+            <outbound-connections>
+                <remote-outbound-connection name="remote-ejb-connection" outbound-socket-binding-ref="remote-ejb" authentication-context="admin-ctx"/>
+            </outbound-connections>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:request-controller:1.0"/>
         <subsystem xmlns="urn:jboss:domain:resource-adapters:5.0">
@@ -629,6 +640,9 @@
         <socket-binding name="txn-status-manager" port="4713"/>
         <outbound-socket-binding name="mail-smtp">
             <remote-destination host="localhost" port="25"/>
+        </outbound-socket-binding>
+        <outbound-socket-binding name="remote-ejb">
+            <remote-destination host="${remote.ejb.host:localhost}" port="${remote.ejb.port:8080}"/>
         </outbound-socket-binding>
     </socket-binding-group>
 </server>
