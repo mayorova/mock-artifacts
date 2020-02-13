@@ -26,7 +26,7 @@
         <extension module="org.jboss.as.weld"/>
         <extension module="org.wildfly.extension.batch.jberet"/>
         <extension module="org.wildfly.extension.bean-validation"/>
-        <extension module="org.wildfly.extension.clustering.singleton"/>
+        <!-- <extension module="org.wildfly.extension.clustering.singleton"/> -->
         <extension module="org.wildfly.extension.discovery"/>
         <extension module="org.wildfly.extension.ee-security"/>
         <extension module="org.wildfly.extension.elytron"/>
@@ -554,13 +554,13 @@
                 </maximum-set>
             </deployment-permissions>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:singleton:1.0">
+        <!-- <subsystem xmlns="urn:jboss:domain:singleton:1.0">
             <singleton-policies default="default">
                 <singleton-policy name="default" cache-container="server">
                     <simple-election-policy/>
                 </singleton-policy>
             </singleton-policies>
-        </subsystem>
+        </subsystem> -->
         <subsystem xmlns="urn:jboss:domain:transactions:5.0">
             <core-environment node-identifier="${jboss.node.name}">
                 <process-id>
