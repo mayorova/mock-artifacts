@@ -3,7 +3,7 @@
 <server xmlns="urn:jboss:domain:8.0">
     <extensions>
         <extension module="org.jboss.as.clustering.infinispan"/>
-        <extension module="org.jboss.as.clustering.jgroups"/>
+        <!-- <extension module="org.jboss.as.clustering.jgroups"/> -->
         <extension module="org.jboss.as.connector"/>
         <extension module="org.jboss.as.deployment-scanner"/>
         <extension module="org.jboss.as.ee"/>
@@ -15,7 +15,7 @@
         <extension module="org.jboss.as.jsf"/>
         <extension module="org.jboss.as.logging"/>
         <extension module="org.jboss.as.mail"/>
-        <extension module="org.jboss.as.modcluster"/>
+        <!-- <extension module="org.jboss.as.modcluster"/> -->
         <extension module="org.jboss.as.naming"/>
         <extension module="org.jboss.as.pojo"/>
         <extension module="org.jboss.as.remoting"/>
@@ -31,7 +31,7 @@
         <extension module="org.wildfly.extension.ee-security"/>
         <extension module="org.wildfly.extension.elytron"/>
         <extension module="org.wildfly.extension.io"/>
-        <extension module="org.wildfly.extension.messaging-activemq"/>
+        <!-- <extension module="org.wildfly.extension.messaging-activemq"/> -->
         <extension module="org.wildfly.extension.microprofile.config-smallrye"/>
         <extension module="org.wildfly.extension.microprofile.health-smallrye"/>
         <!-- ##TRACING_EXTENSION## -->
@@ -422,23 +422,23 @@
             <cached-connection-manager/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:jdr:1.0"/>
-        <subsystem xmlns="urn:jboss:domain:jgroups:6.0">
+        <!-- <subsystem xmlns="urn:jboss:domain:jgroups:6.0">
             <channels default="ee">
                 <channel name="ee" stack="tcp"/>
             </channels>
             <stacks>
                 <stack name="udp">
                     <transport type="UDP" socket-binding="jgroups-udp"/>
-                    <!-- ##JGROUPS_PING_PROTOCOL## -->
+                    <!- ##JGROUPS_PING_PROTOCOL## ->
                     <protocol type="MERGE3"/>
                     <protocol type="FD_SOCK"/>
                     <protocol type="FD_ALL"/>
                     <protocol type="VERIFY_SUSPECT"/>
-                    <!-- ##JGROUPS_ENCRYPT## -->
+                    <!- ##JGROUPS_ENCRYPT## ->
                     <protocol type="pbcast.NAKACK2"/>
                     <protocol type="UNICAST3"/>
                     <protocol type="pbcast.STABLE"/>
-                    <!-- ##JGROUPS_AUTH## -->
+                    <!- ##JGROUPS_AUTH## ->
                     <protocol type="pbcast.GMS">
                         <property name="join_timeout">${env.JGROUPS_JOIN_TIMEOUT:10000}</property>
                     </protocol>
@@ -451,16 +451,16 @@
                         <property name="use_ip_addrs">false</property>
                         <property name="sock_conn_timeout">300</property>
                     </transport>
-                    <!-- ##JGROUPS_PING_PROTOCOL## -->
+                    <!- ##JGROUPS_PING_PROTOCOL## ->
                     <protocol type="MERGE3"/>
                     <protocol type="FD_SOCK"/>
                     <protocol type="FD_ALL"/>
                     <protocol type="VERIFY_SUSPECT"/>
-                    <!-- ##JGROUPS_ENCRYPT## -->
+                    <!- ##JGROUPS_ENCRYPT## ->
                     <protocol type="pbcast.NAKACK2"/>
                     <protocol type="UNICAST3"/>
                     <protocol type="pbcast.STABLE"/>
-                    <!-- ##JGROUPS_AUTH## -->
+                    <!- ##JGROUPS_AUTH## ->
                     <protocol type="pbcast.GMS">
                         <property name="join_timeout">${env.JGROUPS_JOIN_TIMEOUT:10000}</property>
                     </protocol>
@@ -468,7 +468,7 @@
                     <protocol type="FRAG3"/>
                 </stack>
             </stacks>
-        </subsystem>
+        </subsystem> -->
         <subsystem xmlns="urn:jboss:domain:jmx:1.3">
             <expose-resolved-model/>
             <expose-expression-model/>
@@ -485,21 +485,21 @@
                 <smtp-server outbound-socket-binding-ref="mail-smtp"/>
             </mail-session>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:messaging-activemq:4.0">
-            <!-- ##MESSAGING_SUBSYSTEM_CONFIG## -->
-        </subsystem>
+        <!-- <subsystem xmlns="urn:jboss:domain:messaging-activemq:4.0">
+            <!- ##MESSAGING_SUBSYSTEM_CONFIG## ->
+        </subsystem> -->
         <subsystem xmlns="urn:wildfly:microprofile-config-smallrye:1.0">
             <!-- ##MICROPROFILE_CONFIG_SOURCE## -->
         </subsystem>
         <subsystem xmlns="urn:wildfly:microprofile-health-smallrye:1.0"/>
         <!-- ##TRACING_SUBSYSTEM## -->
-        <subsystem xmlns="urn:jboss:domain:modcluster:4.0">
+        <!-- <subsystem xmlns="urn:jboss:domain:modcluster:4.0">
             <proxy name="default" advertise-socket="modcluster" listener="ajp">
                 <dynamic-load-provider>
                     <load-metric type="cpu"/>
                 </dynamic-load-provider>
             </proxy>
-        </subsystem>
+        </subsystem> -->
         <subsystem xmlns="urn:jboss:domain:naming:2.0">
             <!-- ##MESSAGING_REMOTE_BINDINGS## -->
             <!-- ##AMQ_REMOTE_CONTEXT## -->
@@ -627,10 +627,10 @@
         <socket-binding name="ajp" interface="bindall" port="${jboss.ajp.port:8009}"/>
         <socket-binding name="http" interface="bindall" port="${jboss.http.port:8080}"/>
         <socket-binding name="https" interface="bindall" port="${jboss.https.port:8443}"/>
-        <socket-binding name="jgroups-mping" interface="private" multicast-address="${jboss.default.multicast.address:230.0.0.4}" multicast-port="45700"/>
+        <!-- <socket-binding name="jgroups-mping" interface="private" multicast-address="${jboss.default.multicast.address:230.0.0.4}" multicast-port="45700"/>
         <socket-binding name="jgroups-tcp" interface="private" port="7600"/>
-        <socket-binding name="jgroups-udp" interface="private" port="55200" multicast-address="${jboss.default.multicast.address:230.0.0.4}" multicast-port="45688"/>
-        <socket-binding name="modcluster" multicast-address="${jboss.modcluster.multicast.address:224.0.1.105}" multicast-port="23364"/>
+        <socket-binding name="jgroups-udp" interface="private" port="55200" multicast-address="${jboss.default.multicast.address:230.0.0.4}" multicast-port="45688"/> -->
+        <!-- <socket-binding name="modcluster" multicast-address="${jboss.modcluster.multicast.address:224.0.1.105}" multicast-port="23364"/> -->
         <outbound-socket-binding name="http-messaging">
             <remote-destination host="${jboss.messaging.host:localhost}" port="${jboss.http.port:8080}"/>
         </outbound-socket-binding>
